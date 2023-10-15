@@ -2,11 +2,15 @@ package br.com.iaraoliveira.todolist.task;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,5 +42,22 @@ public class TaskController {
         }
         var taskCreated = this.taskRepository.save(taskModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(taskCreated);
+    }
+
+    @GetMapping("/")
+    public List<TaskModel> list(HttpServletRequest request){
+        var idUser = request.getAttribute("idUser");
+        var tasks = this.taskRepository.findByIdUser((UUID) idUser);
+        return tasks;
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id){
+        var idUser = request.getAttribute("idUser");
+        taskModel.setIdUser((UUID) idUser);
+        taskModel.setId(id);
+        var taskUpdated = this.taskRepository.save(taskModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskUpdated);
+
     }
 }
