@@ -1,5 +1,7 @@
 package br.com.iaraoliveira.todolist.task;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -17,19 +21,10 @@ public class TaskController {
     private iTaskRepository taskRepository;
 
     @PostMapping("/")
-    public void create(@RequestBody TaskModel taskModel) {
-        // var user = this.taskRepository.findByUsername(userModel.getUsername());
-
-        // if (user != null) {
-        //     System.out.println("Este usuário já existe.");
-        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe");
-        // }
-
-        // var PasswordHashed = BCrypt.withDefaults().hashToString(12, userModel.getPassword().toCharArray());
-
-        // userModel.setPassword(PasswordHashed);
-
+    public TaskModel create(@RequestBody TaskModel taskModel, HttpServletRequest request) {
+        var idUser = request.getAttribute("idUser");
+        taskModel.setIdUser((UUID) idUser);
         var taskCreated = this.taskRepository.save(taskModel);
-        // return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
+        return taskCreated;
     }
 }
